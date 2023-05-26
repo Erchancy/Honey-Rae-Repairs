@@ -12,14 +12,18 @@ export const TicketList = ({ searchTermState }) => {
     const localHoneyUser = localStorage.getItem("honey_user")
     const honeyUserObject = JSON.parse(localHoneyUser)
 
+    // This filters tickets according to what has been typed in the search bar
     useEffect(
         () => {
-            const searchedTickets = tickets.filter(ticket => ticket.description.startsWith(searchTermState))
+            const searchedTickets = tickets.filter(ticket => {
+                return ticket.description.toLowerCase().startsWith(searchTermState.toLowerCase())
+            })
             setFiltered(searchedTickets)
         },
         [ searchTermState ]
     )
 
+    // This filters tickets on whether or not it is listed as ane mergency
     useEffect(
         () => {
             if (emergency) {
@@ -33,6 +37,7 @@ export const TicketList = ({ searchTermState }) => {
         [emergency]
     )
 
+    // This grabs the ticket data when the web app starts
     useEffect(
         () => {
             fetch(`http://localhost:8088/serviceTickets`)
@@ -41,24 +46,26 @@ export const TicketList = ({ searchTermState }) => {
                     setTickets(ticketArray)
             })
         },
-        [] // When this array is empty, you are observing initial component state
+        [] // When this array is empty, you are observing initial component state ONLY
     )
 
-        useEffect(
-            () => {
-                if (honeyUserObject.staff) {
-                    // For employees
-                    setFiltered(tickets)
-                }
-                else {
-                    // For customers
-                    const myTickets = tickets.filter(ticket => ticket.userId === honeyUserObject.id)
-                    setFiltered(myTickets)
-                }
-            },
-            [tickets]
-        )
+    // This checks if a user is staff, if they are it shows all tickets, if they aren't it only shows the customer's own tickets
+    useEffect(
+        () => {
+            if (honeyUserObject.staff) {
+                // For employees
+                setFiltered(tickets)
+            }
+            else {
+                // For customers
+                const myTickets = tickets.filter(ticket => ticket.userId === honeyUserObject.id)
+                setFiltered(myTickets)
+            }
+        },
+        [tickets]
+    )
 
+        // This checks if openOnly(false by default, true when button is pressed) is true, if it is only shows uncompleted tickets, if not shows all of customer's own tickets
         useEffect(
             () => {
                 if (openOnly) {
