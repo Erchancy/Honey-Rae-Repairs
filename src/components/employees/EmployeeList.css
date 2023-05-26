@@ -1,0 +1,13 @@
+.employees {
+    display: flex;
+    flex-flow: row wrap;
+    justify-content: space-evenly;
+}
+
+.employee {
+    background-color: hotpink;
+    border: 2px dotted fuchsia;
+    color: black;
+    padding: .5rem;
+    margin: .5rem
+}
