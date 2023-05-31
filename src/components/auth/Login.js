@@ -4,21 +4,26 @@ import { useNavigate } from "react-router-dom"
 import "./Login.css"
 
 export const Login = () => {
+    // Provides initial state for email, uses a default employee email
     const [email, set] = useState("hpassfield7@netvibes.com")
+    // Initialize navigate
     const navigate = useNavigate()
 
     const handleLogin = async (e) => {
         e.preventDefault()
 
+        // fetches the user with email equal to email on line 8
         const res = await fetch(`http://localhost:8088/users?email=${email}`);
         const foundUsers = await res.json();
         if (foundUsers.length === 1) {
             const user = foundUsers[0];
+            // Creates localStorage item honey_user
             localStorage.setItem("honey_user", JSON.stringify({
                 id: user.id,
                 staff: user.isStaff
             }));
 
+            // Brings the user to the default "/" path
             navigate("/");
         }
         else {
@@ -26,6 +31,7 @@ export const Login = () => {
         }
     }
 
+    // Creates the JSX of the login page
     return (
         <main className="container--login">
             <section>
