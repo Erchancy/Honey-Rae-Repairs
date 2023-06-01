@@ -1,9 +1,11 @@
 import { useEffect, useState } from "react"
 import { Link, useNavigate } from "react-router-dom"
 import "./Tickets.css"
+import { Ticket } from "./Ticket"
 
 export const TicketList = ({ searchTermState }) => {
     const [tickets, setTickets] = useState([])
+    const [employees, setEmployees] = useState([])
     const [filteredTickets, setFiltered] = useState([])
     const [emergency, setEmergency] = useState(false)
     const [openOnly, updateOpenOnly] = useState(false)
@@ -40,10 +42,15 @@ export const TicketList = ({ searchTermState }) => {
     // This grabs the ticket data when the web app starts
     useEffect(
         () => {
-            fetch(`http://localhost:8088/serviceTickets`)
+            fetch(`http://localhost:8088/serviceTickets?_embed=employeeTickets`)
                 .then(response => response.json())
                 .then((ticketArray) => {
                     setTickets(ticketArray)
+                })
+                fetch(`http://localhost:8088/employees?_expand=user`)
+                .then(response => response.json())
+                .then((employeeArray) => {
+                    setEmployees(employeeArray)
                 })
         },
         [] // When this array is empty, you are observing initial component state ONLY
@@ -82,8 +89,10 @@ export const TicketList = ({ searchTermState }) => {
         [openOnly]
     )
 
+    // This returns a React fragment with several JSX elements inside
     return <>
         {
+            // This ternary checks if honeyUserObject's staff property is true and generates two buttons, if false it generates the other three buttons
             honeyUserObject.staff
                 ? <>
                     <button onClick={() => { setEmergency(true) }} >Emergency Only</button>
@@ -100,16 +109,10 @@ export const TicketList = ({ searchTermState }) => {
 
         <article className="tickets">
             {
+                // This uses the map method to convert the filteredTickets array into individual JSX representations of the ticket objects by invoking the Ticket component
+                // It passes the individual ticket and the honeyUserObject staff property as props to Ticket
                 filteredTickets.map(
-                    (ticket) => {
-                        return <section className="ticket" key={`ticket--${ticket.id}`}>
-                            <header>
-                                <Link to={`/tickets/${ticket.id}/edit`}>Ticket {ticket.id}</Link>
-                            </header>
-                            <section>{ticket.description}</section>
-                            <footer>Emergency: {ticket.emergency ? "🧨" : "No"}</footer>
-                        </section>
-                    }
+                    (ticket) => <Ticket ticketObject={ticket} isStaff={honeyUserObject.staff} employees={employees}/>
                 )
             }
         </article>
