@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react"
-import { useNavigate } from "react-router-dom"
+import { Link, useNavigate } from "react-router-dom"
 import "./Tickets.css"
 
 export const TicketList = ({ searchTermState }) => {
@@ -20,7 +20,7 @@ export const TicketList = ({ searchTermState }) => {
             })
             setFiltered(searchedTickets)
         },
-        [ searchTermState ]
+        [searchTermState]
     )
 
     // This filters tickets on whether or not it is listed as ane mergency
@@ -44,7 +44,7 @@ export const TicketList = ({ searchTermState }) => {
                 .then(response => response.json())
                 .then((ticketArray) => {
                     setTickets(ticketArray)
-            })
+                })
         },
         [] // When this array is empty, you are observing initial component state ONLY
     )
@@ -65,29 +65,29 @@ export const TicketList = ({ searchTermState }) => {
         [tickets]
     )
 
-        // This checks if openOnly(false by default, true when button is pressed) is true, if it is only shows uncompleted tickets, if not shows all of customer's own tickets
-        useEffect(
-            () => {
-                if (openOnly) {
-                    const openTicketArray = tickets.filter(ticket => {
-                        return ticket.userId === honeyUserObject.id && ticket.dateCompleted === ""
-                    })
-                    setFiltered(openTicketArray)
-                }
-                else {
-                    const myTickets = tickets.filter(ticket => ticket.userId === honeyUserObject.id)
-                    setFiltered(myTickets)
-                }
-            },
-            [openOnly]
-        )
+    // This checks if openOnly(false by default, true when button is pressed) is true, if it is only shows uncompleted tickets, if not shows all of customer's own tickets
+    useEffect(
+        () => {
+            if (openOnly) {
+                const openTicketArray = tickets.filter(ticket => {
+                    return ticket.userId === honeyUserObject.id && ticket.dateCompleted === ""
+                })
+                setFiltered(openTicketArray)
+            }
+            else {
+                const myTickets = tickets.filter(ticket => ticket.userId === honeyUserObject.id)
+                setFiltered(myTickets)
+            }
+        },
+        [openOnly]
+    )
 
     return <>
         {
             honeyUserObject.staff
                 ? <>
-                    <button onClick={ () => { setEmergency(true) } } >Emergency Only</button>
-                    <button onClick={ () => { setEmergency(false) } } >Show All</button>
+                    <button onClick={() => { setEmergency(true) }} >Emergency Only</button>
+                    <button onClick={() => { setEmergency(false) }} >Show All</button>
                 </>
                 : <>
                     <button onClick={() => navigate("/ticket/create")}>Create Ticket</button>
@@ -95,7 +95,7 @@ export const TicketList = ({ searchTermState }) => {
                     <button onClick={() => updateOpenOnly(false)}>All My Tickets</button>
                 </>
         }
-    
+
         <h2>List of Tickets</h2>
 
         <article className="tickets">
@@ -103,12 +103,15 @@ export const TicketList = ({ searchTermState }) => {
                 filteredTickets.map(
                     (ticket) => {
                         return <section className="ticket" key={`ticket--${ticket.id}`}>
-                            <header>{ticket.description}</header>
-                            <footer>Emergency: {ticket.emergency ? "Yes" : "No"}</footer>
+                            <header>
+                                <Link to={`/tickets/${ticket.id}/edit`}>Ticket {ticket.id}</Link>
+                            </header>
+                            <section>{ticket.description}</section>
+                            <footer>Emergency: {ticket.emergency ? "🧨" : "No"}</footer>
                         </section>
                     }
                 )
             }
         </article>
-        </>
+    </>
 }
