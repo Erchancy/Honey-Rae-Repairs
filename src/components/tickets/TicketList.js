@@ -40,14 +40,18 @@ export const TicketList = ({ searchTermState }) => {
     )
 
     // This grabs the ticket data when the web app starts
+    const getAllTickets = () => {
+        fetch(`http://localhost:8088/serviceTickets?_embed=employeeTickets`)
+            .then(response => response.json())
+            .then((ticketArray) => {
+                setTickets(ticketArray)
+            })
+    }
+
     useEffect(
         () => {
-            fetch(`http://localhost:8088/serviceTickets?_embed=employeeTickets`)
-                .then(response => response.json())
-                .then((ticketArray) => {
-                    setTickets(ticketArray)
-                })
-                fetch(`http://localhost:8088/employees?_expand=user`)
+            getAllTickets()
+            fetch(`http://localhost:8088/employees?_expand=user`)
                 .then(response => response.json())
                 .then((employeeArray) => {
                     setEmployees(employeeArray)
@@ -112,7 +116,12 @@ export const TicketList = ({ searchTermState }) => {
                 // This uses the map method to convert the filteredTickets array into individual JSX representations of the ticket objects by invoking the Ticket component
                 // It passes the individual ticket and the honeyUserObject staff property as props to Ticket
                 filteredTickets.map(
-                    (ticket) => <Ticket ticketObject={ticket} isStaff={honeyUserObject.staff} employees={employees}/>
+                    (ticket) => <Ticket
+                    ticketObject={ticket}
+                    currentUser={honeyUserObject}
+                    employees={employees}
+                    getAllTickets={getAllTickets}
+                    />
                 )
             }
         </article>
