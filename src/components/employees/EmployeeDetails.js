@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react"
 import { useParams } from "react-router-dom"
+import { getSingleEmployee } from "../ApiManager"
 
 
 // This function creates employeeId state through useParam to dynamically fill the object depending on the currrent url route?
@@ -12,13 +13,10 @@ export const EmployeeDetails = () => {
 
     useEffect(
         () => {
-            const getEmployee = async() => {
-                const response = await fetch(`http://localhost:8088/employees?_expand=user&_embed=employeeTickets&userId=${employeeId}`)
-                const data = await response.json()
-                const singleEmployee = data[0]
-                updateEmployee(singleEmployee)
-            }
-            getEmployee()
+            getSingleEmployee(employeeId)
+            .then((employee) => {
+                updateEmployee(employee)
+            })
         },
         [employeeId]
     )

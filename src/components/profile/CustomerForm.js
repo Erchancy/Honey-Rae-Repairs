@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react"
+import { getCurrentCustomer, updateCustomerProfile } from "../ApiManager"
 
 export const CustomerForm = () => {
     // Provide initial state for profile
@@ -26,12 +27,9 @@ export const CustomerForm = () => {
 
     // Get customer profile info from API and update state
     useEffect(() => {
-        fetch(`http://localhost:8088/customers?userId=${honeyUserObject.id}`)
-            .then(response => response.json())
-            .then((data) => {
-                // This grabs the first object in the returned array, even though the array is only one object in length we want that object specifically and not the array itself
-                const customerObject = data[0]
-                updateProfile(customerObject)
+        getCurrentCustomer(honeyUserObject)
+            .then((currentCustomer) => {
+                updateProfile(currentCustomer)
             })
     },
         []
@@ -45,17 +43,7 @@ export const CustomerForm = () => {
             Perform the PUT fetch() call here to update the profile.
             Invoke setFeedback in order to display save message
         */
-        return fetch(`http://localhost:8088/customers/${profile.id}`, {
-            method: "PUT",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify(profile)
-        })
-            .then(response => response.json())
-            .then(() => {
-                setFeedback("customer profile successfully saved")
-            })
+       updateCustomerProfile(profile, setFeedback)
     }
 
     // Line 64 first asks if feedback includes error, if it does it displays error, otherwise the class is feedback

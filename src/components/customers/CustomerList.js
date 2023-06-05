@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react"
 import "./CustomerList.css"
 import { Customer } from "./Customer"
+import { getAllCustomers } from "../ApiManager"
 
 // This function creates the customers state as an empty array, observes its initial render, fetches the user data
 // and changes the array using setcustomers to reflect the fetched data
@@ -11,12 +12,10 @@ export const CustomerList = () => {
 
     useEffect(
         () => {
-            const getCustomerList = async() => {
-                const response = await fetch("http://localhost:8088/customers?_expand=user")
-                const customers = await response.json()
+            getAllCustomers()
+            .then((customers) => {
                 setCustomers(customers)
-            }
-            getCustomerList()
+            })
         },
         []
     )

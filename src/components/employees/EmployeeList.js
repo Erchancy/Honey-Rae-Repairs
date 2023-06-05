@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react"
 import "./EmployeeList.css"
 import { Employee } from "./Employee"
+import { getEmployeeList } from "../ApiManager"
 
 // This function creates the employees state as an empty array, observes its initial render, fetches the user data where isStaff property is true
 // and changes the array using setEmployees to reflect the fetched data
@@ -10,12 +11,10 @@ export const EmployeeList = () => {
 
     useEffect(
         () => {
-            const getEmployeeList = async() => {
-                const response = await fetch("http://localhost:8088/users?isStaff=true")
-                const employees = await response.json()
-                setEmployees(employees)
-            }
-            getEmployeeList()
+                getEmployeeList()
+                .then((employees) => {
+                    setEmployees(employees)
+                })
         },
         []
     )

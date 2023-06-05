@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react"
 import { useNavigate, useParams } from "react-router-dom"
+import { editTicket, getTicketToEdit } from "../ApiManager"
 
 export const TicketEdit = () => {
 
@@ -17,22 +18,8 @@ export const TicketEdit = () => {
     // Activates on Save Button Click, saves the edits to the database and returns the user to the tickets page
     const handleSaveButtonClick = (event) => {
         event.preventDefault()
-
         // Perform the fetch() PUT to alter the object in the database
-        return fetch(`http://localhost:8088/serviceTickets/${ticketId}`, {
-            method: "PUT",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify(ticket)
-        })
-            .then(response => response.json())
-            .then(() => {
-                setFeedback("Ticket successfully saved")
-            })
-            .then(() => {
-                setTimeout(() => navigate("/tickets"), 3000)
-            })
+        editTicket(ticketId, ticket, setFeedback, setTimeout, navigate)
     }
 
     // Provide initial state for feedback
@@ -49,13 +36,10 @@ export const TicketEdit = () => {
 
     useEffect(
         () => {
-            const getTicketToEdit = async () => {
-                const response = await fetch(`http://localhost:8088/serviceTickets?id=${ticketId}`)
-                const tickets = await response.json()
-                const ticketToEdit = await tickets[0]
-                updateTicket(ticketToEdit)
-            }
-            getTicketToEdit()
+            getTicketToEdit(ticketId)
+                .then((ticketToEdit) => {
+                    updateTicket(ticketToEdit)
+                })
         },
         [ticketId]
     )
